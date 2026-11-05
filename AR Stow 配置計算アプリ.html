@@ -1,0 +1,264 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AR Stow 配置計算アプリ</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Segoe UI', sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    min-height: 100vh;
+    padding: 16px;
+  }
+  .container { max-width: 700px; margin: 0 auto; }
+  h1 { text-align: center; font-size: 1.4rem; margin-bottom: 6px; color: #38bdf8; }
+  .subtitle { text-align: center; font-size: 0.8rem; color: #64748b; margin-bottom: 20px; }
+
+  .input-section {
+    background: #1e293b; border-radius: 16px; padding: 20px; margin-bottom: 16px; text-align: center;
+  }
+  .input-section label { font-size: 0.95rem; color: #94a3b8; display: block; margin-bottom: 10px; }
+  .input-row { display: flex; align-items: center; justify-content: center; gap: 10px; }
+  .input-row input {
+    width: 110px; padding: 12px; font-size: 2rem; text-align: center;
+    border: 2px solid #334155; border-radius: 12px; background: #0f172a; color: #f1f5f9; outline: none;
+  }
+  .input-row input:focus { border-color: #38bdf8; }
+  .btn {
+    padding: 12px 28px; font-size: 1rem; font-weight: 700; border: none; border-radius: 12px;
+    cursor: pointer; background: #2563eb; color: white;
+  }
+  .btn:hover { background: #1d4ed8; }
+  .btn:active { transform: scale(0.97); }
+
+  .result { display: none; }
+  .result.show { display: block; }
+
+  .summary-bar {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+    background: #1e293b; border-radius: 16px; padding: 14px; margin-bottom: 16px;
+  }
+  .summary-item { text-align: center; }
+  .summary-item .num { font-size: 1.6rem; font-weight: 800; color: #38bdf8; }
+  .summary-item .lbl { font-size: 0.65rem; color: #64748b; margin-top: 2px; }
+
+  .step-card {
+    background: #1e293b; border-radius: 16px; padding: 16px; margin-bottom: 12px; border-left: 4px solid #334155;
+  }
+  .step-card.s1 { border-left-color: #22c55e; }
+  .step-card.s2 { border-left-color: #eab308; }
+  .step-card.s3 { border-left-color: #f97316; }
+
+  .step-title { font-size: 0.8rem; font-weight: 700; color: #94a3b8; margin-bottom: 10px; letter-spacing: 1px; }
+
+  .floor-grid { display: grid; gap: 6px; }
+  .g5 { grid-template-columns: repeat(5, 1fr); }
+  .floor-cell { background: #0f172a; border-radius: 10px; padding: 8px 4px; text-align: center; }
+  .floor-cell .fl { font-size: 0.65rem; color: #64748b; margin-bottom: 2px; }
+  .floor-cell .fn { font-size: 1.3rem; font-weight: 800; }
+  .floor-cell .fs { font-size: 0.6rem; color: #64748b; margin-top: 2px; }
+  .green { color: #22c55e; }
+  .yellow { color: #eab308; }
+  .orange { color: #f97316; }
+  .blue { color: #38bdf8; }
+  .gray { color: #475569; }
+
+  .fc-card {
+    background: linear-gradient(135deg, #1e3a5f, #1e293b); border-radius: 16px;
+    padding: 16px; margin-bottom: 12px; border: 1px solid #2563eb;
+  }
+  .fc-card .step-title { color: #60a5fa; }
+  .fc-row { display: flex; justify-content: space-around; text-align: center; }
+  .fc-item .fc-num { font-size: 1.4rem; font-weight: 800; color: #60a5fa; }
+  .fc-item .fc-lbl { font-size: 0.65rem; color: #64748b; margin-top: 2px; }
+
+  .lh-output { background: #1e293b; border-radius: 16px; padding: 16px; margin-top: 12px; }
+  .lh-output .step-title { color: #a78bfa; }
+  .lh-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin-top: 8px; }
+  .lh-table th, .lh-table td { padding: 7px 5px; text-align: center; border-bottom: 1px solid #334155; }
+  .lh-table th { color: #64748b; font-weight: 600; font-size: 0.68rem; }
+  .lh-table td { color: #e2e8f0; }
+  .lh-table tr:last-child td { border-bottom: none; font-weight: 700; }
+  .hl { background: #2d1f0e; }
+
+  .warning {
+    background: #451a03; border: 1px solid #f97316; border-radius: 12px;
+    padding: 10px 14px; margin-bottom: 12px; font-size: 0.82rem; color: #fed7aa; display: none;
+  }
+  .warning.show { display: block; }
+
+  .copy-btn {
+    display: block; margin: 12px auto 0; padding: 10px 24px; font-size: 0.85rem; font-weight: 600;
+    border: 1px solid #334155; border-radius: 10px; background: #1e293b; color: #94a3b8; cursor: pointer;
+  }
+  .copy-btn:hover { background: #334155; color: #e2e8f0; }
+  .copy-btn.copied { background: #166534; color: #bbf7d0; border-color: #22c55e; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>AR Stow 配置計算アプリ</h1>
+  <p class="subtitle">e勤 17時以降 LH更新用 — 総人数を入力 → 自動配置計算</p>
+
+  <div class="input-section">
+    <label>Stow 総人数（デジコ TOTAL LH）</label>
+    <div class="input-row">
+      <input type="number" id="totalInput" placeholder="70" min="0" max="200" inputmode="numeric">
+      <button class="btn" onclick="calc()">計算</button>
+    </div>
+  </div>
+
+  <div class="warning" id="warn"></div>
+
+  <div class="result" id="res">
+    <div class="summary-bar" id="sumBar"></div>
+
+    <div class="step-card s1">
+      <div class="step-title">STEP 1 — 西側 固定配置</div>
+      <div class="floor-grid g5">
+        <div class="floor-cell"><div class="fl">4F</div><div class="fn green">10</div><div class="fs">Stow</div></div>
+        <div class="floor-cell"><div class="fl">3F</div><div class="fn green">10</div><div class="fs">Stow</div></div>
+        <div class="floor-cell"><div class="fl">2F</div><div class="fn green">10</div><div class="fs">Stow</div></div>
+        <div class="floor-cell"><div class="fl">FC</div><div class="fn blue">6</div><div class="fs">各階2名</div></div>
+        <div class="floor-cell"><div class="fl">小計</div><div class="fn gray">36</div><div class="fs">固定</div></div>
+      </div>
+    </div>
+
+    <div class="step-card s2">
+      <div class="step-title">STEP 2 — 大量配置（各階6名）</div>
+      <div class="floor-grid g5">
+        <div class="floor-cell"><div class="fl">4F</div><div class="fn yellow">6</div><div class="fs">Stow</div></div>
+        <div class="floor-cell"><div class="fl">3F</div><div class="fn yellow">6</div><div class="fs">Stow</div></div>
+        <div class="floor-cell"><div class="fl">2F</div><div class="fn yellow">6</div><div class="fs">Stow</div></div>
+        <div class="floor-cell"><div class="fl">FC</div><div class="fn blue">3</div><div class="fs">3階=3名</div></div>
+        <div class="floor-cell"><div class="fl">小計</div><div class="fn gray">21</div><div class="fs">固定</div></div>
+      </div>
+    </div>
+
+    <div class="step-card s3">
+      <div class="step-title">STEP 3 — 南北配置（変動）</div>
+      <div id="s3c"></div>
+    </div>
+
+    <div class="fc-card">
+      <div class="step-title">FC 合計</div>
+      <div id="fcc"></div>
+    </div>
+
+    <div class="lh-output">
+      <div class="step-title">📋 LH入力ファイル 記入用サマリー</div>
+      <table class="lh-table" id="lht"></table>
+      <button class="copy-btn" id="copyBtn" onclick="copyTable()">📋 テーブルをコピー</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function calc() {
+  var t = parseInt(document.getElementById('totalInput').value);
+  var w = document.getElementById('warn');
+  var r = document.getElementById('res');
+
+  if (isNaN(t) || t < 0) {
+    w.textContent = '⚠️ 人数を入力してください'; w.className = 'warning show'; r.className = 'result'; return;
+  }
+
+  var fixed = 30 + 6 + 18 + 3;
+  var rem = t - fixed;
+
+  if (rem < 0) {
+    w.textContent = '⚠️ 総人数（' + t + '名）が固定配置（' + fixed + '名）より少ないです。'; w.className = 'warning show'; r.className = 'result'; return;
+  }
+  w.className = 'warning';
+
+  var nf, sa, sf;
+  if (rem === 0) { nf = 0; sa = []; sf = 0; }
+  else if (rem >= 11) {
+    nf = 3; sf = 3; var wk = rem - sf;
+    var b = Math.floor(wk / 3), e = wk % 3;
+    sa = [b, b, b]; for (var i = 0; i < e; i++) sa[i]++;
+  } else if (rem >= 5) {
+    nf = 2; sf = 2; var wk2 = rem - sf;
+    var b2 = Math.floor(wk2 / 2), e2 = wk2 % 2;
+    sa = [b2, b2]; for (var j = 0; j < e2; j++) sa[j]++;
+  } else if (rem >= 2) {
+    nf = 1; sf = 1; sa = [rem - sf];
+  } else { nf = 0; sf = 0; sa = []; }
+
+  var sn = 0; for (var k = 0; k < sa.length; k++) sn += sa[k];
+  var tfc = 6 + 3 + sf;
+  var tst = 30 + 18 + sn;
+
+  document.getElementById('sumBar').innerHTML =
+    '<div class="summary-item"><div class="num">' + t + '</div><div class="lbl">総人数</div></div>' +
+    '<div class="summary-item"><div class="num">' + tst + '</div><div class="lbl">Stow配置</div></div>' +
+    '<div class="summary-item"><div class="num">' + tfc + '</div><div class="lbl">FC合計</div></div>' +
+    '<div class="summary-item"><div class="num">' + rem + '</div><div class="lbl">南北投入</div></div>';
+
+  var fn = ['4F', '3F', '2F'];
+  var s3 = document.getElementById('s3c');
+  if (nf === 0) {
+    s3.innerHTML = '<div style="text-align:center;color:#64748b;padding:12px;">南北配置なし（残り0名）</div>';
+  } else {
+    var cols = nf + 2;
+    var h = '<div style="display:grid;grid-template-columns:repeat(' + cols + ',1fr);gap:6px;">';
+    for (var f = 0; f < nf; f++) {
+      h += '<div class="floor-cell"><div class="fl">' + fn[3 - nf + f] + '</div><div class="fn orange">' + sa[f] + '</div><div class="fs">Stow</div></div>';
+    }
+    h += '<div class="floor-cell"><div class="fl">FC</div><div class="fn blue">' + sf + '</div><div class="fs">' + nf + '階=' + sf + '名</div></div>';
+    h += '<div class="floor-cell"><div class="fl">小計</div><div class="fn gray">' + rem + '</div><div class="fs">変動</div></div></div>';
+    h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid #334155;"><span style="color:#94a3b8;font-size:0.82rem;">配置階数</span><span style="font-size:1.1rem;font-weight:800;color:#f97316;">' + nf + '階</span></div>';
+    s3.innerHTML = h;
+  }
+
+  document.getElementById('fcc').innerHTML =
+    '<div class="fc-row">' +
+    '<div class="fc-item"><div class="fc-num">6</div><div class="fc-lbl">西側FC</div></div>' +
+    '<div class="fc-item"><div class="fc-num">3</div><div class="fc-lbl">大量FC</div></div>' +
+    '<div class="fc-item"><div class="fc-num">' + sf + '</div><div class="fc-lbl">南北FC</div></div>' +
+    '<div class="fc-item"><div class="fc-num" style="font-size:1.8rem;">' + tfc + '</div><div class="fc-lbl">FC合計</div></div></div>';
+
+  var v4 = nf === 3 ? sa[0] : '-';
+  var v3 = nf === 3 ? sa[1] : (nf === 2 ? sa[0] : '-');
+  var v2 = nf === 3 ? sa[2] : (nf === 2 ? sa[1] : (nf === 1 ? sa[0] : '-'));
+  var t4 = 10 + 6 + (v4 === '-' ? 0 : v4);
+  var t3 = 10 + 6 + (v3 === '-' ? 0 : v3);
+  var t2 = 10 + 6 + (v2 === '-' ? 0 : v2);
+
+  document.getElementById('lht').innerHTML =
+    '<tr><th></th><th>4F</th><th>3F</th><th>2F</th><th>FC</th><th>合計</th></tr>' +
+    '<tr><td>西側</td><td>10</td><td>10</td><td>10</td><td>6</td><td>36</td></tr>' +
+    '<tr><td>大量</td><td>6</td><td>6</td><td>6</td><td>3</td><td>21</td></tr>' +
+    '<tr class="hl"><td>南北</td><td>' + v4 + '</td><td>' + v3 + '</td><td>' + v2 + '</td><td>' + sf + '</td><td>' + rem + '</td></tr>' +
+    '<tr><td><strong>合計</strong></td><td><strong>' + t4 + '</strong></td><td><strong>' + t3 + '</strong></td><td><strong>' + t2 + '</strong></td><td><strong>' + tfc + '</strong></td><td><strong>' + t + '</strong></td></tr>';
+
+  r.className = 'result show';
+  document.getElementById('copyBtn').className = 'copy-btn';
+  document.getElementById('copyBtn').textContent = '📋 テーブルをコピー';
+}
+
+function copyTable() {
+  var tbl = document.getElementById('lht');
+  var txt = '';
+  for (var i = 0; i < tbl.rows.length; i++) {
+    var row = [];
+    for (var j = 0; j < tbl.rows[i].cells.length; j++) {
+      row.push(tbl.rows[i].cells[j].innerText);
+    }
+    txt += row.join('\t') + '\n';
+  }
+  navigator.clipboard.writeText(txt).then(function() {
+    var btn = document.getElementById('copyBtn');
+    btn.textContent = '✅ コピーしました！';
+    btn.className = 'copy-btn copied';
+  });
+}
+
+document.getElementById('totalInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') calc(); });
+</script>
+</body>
+</html>

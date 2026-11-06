@@ -12,16 +12,16 @@
   h1{text-align:center;font-size:1.4rem;margin-bottom:6px;color:#38bdf8}
   .subtitle{text-align:center;font-size:0.8rem;color:#64748b;margin-bottom:20px}
   .input-section{background:#1e293b;border-radius:16px;padding:20px;margin-bottom:16px}
-  .input-grid{display:grid;grid-template-columns:1fr 40px 1fr 40px 1fr 20px;gap:6px;align-items:center;margin-bottom:12px}
+  .input-grid{display:grid;grid-template-columns:1fr 30px 1fr 30px 1fr 20px;gap:4px;align-items:center;margin-bottom:14px}
   .input-box{text-align:center}
-  .input-box label{font-size:0.7rem;color:#64748b;display:block;margin-bottom:4px}
+  .input-box label{font-size:0.68rem;color:#64748b;display:block;margin-bottom:4px;white-space:nowrap}
   .input-box input{width:100%;padding:10px;font-size:1.4rem;text-align:center;border:2px solid #334155;border-radius:10px;background:#0f172a;color:#f1f5f9;outline:none}
   .input-box input:focus{border-color:#38bdf8}
-  .op{font-size:1.4rem;color:#64748b;text-align:center;padding-top:18px}
-  .total-display{text-align:center;margin-bottom:12px}
+  .op{font-size:1.3rem;color:#64748b;text-align:center;padding-top:16px}
+  .total-display{text-align:center;margin-bottom:14px;padding:10px;background:#0f172a;border-radius:12px}
   .total-display .total-label{font-size:0.75rem;color:#64748b}
-  .total-display .total-num{font-size:2.2rem;font-weight:800;color:#38bdf8}
-  .total-display .total-unit{font-size:0.85rem;color:#64748b}
+  .total-display .total-num{font-size:2.4rem;font-weight:800;color:#38bdf8}
+  .total-display .total-unit{font-size:0.8rem;color:#64748b}
   .btn{display:block;width:100%;padding:12px;font-size:1rem;font-weight:700;border:none;border-radius:12px;cursor:pointer;background:#2563eb;color:white}
   .btn:hover{background:#1d4ed8}
   .btn:active{transform:scale(0.98)}
@@ -208,7 +208,6 @@ function calc(){
   if(t<36){w.textContent='⚠️ 総人数（'+t+'名）が西側固定配置（36名）より少ないです。';w.className='warning show';r.className='result';return;}
 
   var rem=t-36;
-
   if(rem>36){document.getElementById('popup').className='popup-overlay show';w.className='warning';r.className='result';return;}
   if(rem===1){w.textContent='⚠️ 残り1名は自動配置できません。手動で調整してください。';w.className='warning show';r.className='result';return;}
 
@@ -271,4 +270,3 @@ document.querySelectorAll('input').forEach(function(el){el.addEventListener('key
 </script>
 </body>
 </html>
-

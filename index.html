@@ -6,103 +6,86 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AR Stow 配置計算アプリ</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Segoe UI', sans-serif;
-    background: #0f172a;
-    color: #e2e8f0;
-    min-height: 100vh;
-    padding: 16px;
-  }
-  .container { max-width: 700px; margin: 0 auto; }
-  h1 { text-align: center; font-size: 1.4rem; margin-bottom: 6px; color: #38bdf8; }
-  .subtitle { text-align: center; font-size: 0.8rem; color: #64748b; margin-bottom: 20px; }
-
-  .input-section {
-    background: #1e293b; border-radius: 16px; padding: 20px; margin-bottom: 16px; text-align: center;
-  }
-  .input-section label { font-size: 0.95rem; color: #94a3b8; display: block; margin-bottom: 10px; }
-  .input-row { display: flex; align-items: center; justify-content: center; gap: 10px; }
-  .input-row input {
-    width: 110px; padding: 12px; font-size: 2rem; text-align: center;
-    border: 2px solid #334155; border-radius: 12px; background: #0f172a; color: #f1f5f9; outline: none;
-  }
-  .input-row input:focus { border-color: #38bdf8; }
-  .btn {
-    padding: 12px 28px; font-size: 1rem; font-weight: 700; border: none; border-radius: 12px;
-    cursor: pointer; background: #2563eb; color: white;
-  }
-  .btn:hover { background: #1d4ed8; }
-  .btn:active { transform: scale(0.97); }
-
-  .result { display: none; }
-  .result.show { display: block; }
-
-  .summary-bar {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
-    background: #1e293b; border-radius: 16px; padding: 14px; margin-bottom: 16px;
-  }
-  .summary-item { text-align: center; }
-  .summary-item .num { font-size: 1.6rem; font-weight: 800; color: #38bdf8; }
-  .summary-item .lbl { font-size: 0.65rem; color: #64748b; margin-top: 2px; }
-
-  .step-card {
-    background: #1e293b; border-radius: 16px; padding: 16px; margin-bottom: 12px; border-left: 4px solid #334155;
-  }
-  .step-card.s1 { border-left-color: #22c55e; }
-  .step-card.s2 { border-left-color: #eab308; }
-  .step-card.s3 { border-left-color: #f97316; }
-
-  .step-title { font-size: 0.8rem; font-weight: 700; color: #94a3b8; margin-bottom: 10px; letter-spacing: 1px; }
-
-  .floor-grid { display: grid; gap: 6px; }
-  .g5 { grid-template-columns: repeat(5, 1fr); }
-  .floor-cell { background: #0f172a; border-radius: 10px; padding: 8px 4px; text-align: center; }
-  .floor-cell .fl { font-size: 0.65rem; color: #64748b; margin-bottom: 2px; }
-  .floor-cell .fn { font-size: 1.3rem; font-weight: 800; }
-  .floor-cell .fs { font-size: 0.6rem; color: #64748b; margin-top: 2px; }
-  .green { color: #22c55e; }
-  .yellow { color: #eab308; }
-  .orange { color: #f97316; }
-  .blue { color: #38bdf8; }
-  .gray { color: #475569; }
-
-  .fc-card {
-    background: linear-gradient(135deg, #1e3a5f, #1e293b); border-radius: 16px;
-    padding: 16px; margin-bottom: 12px; border: 1px solid #2563eb;
-  }
-  .fc-card .step-title { color: #60a5fa; }
-  .fc-row { display: flex; justify-content: space-around; text-align: center; }
-  .fc-item .fc-num { font-size: 1.4rem; font-weight: 800; color: #60a5fa; }
-  .fc-item .fc-lbl { font-size: 0.65rem; color: #64748b; margin-top: 2px; }
-
-  .lh-output { background: #1e293b; border-radius: 16px; padding: 16px; margin-top: 12px; }
-  .lh-output .step-title { color: #a78bfa; }
-  .lh-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; margin-top: 8px; }
-  .lh-table th, .lh-table td { padding: 7px 5px; text-align: center; border-bottom: 1px solid #334155; }
-  .lh-table th { color: #64748b; font-weight: 600; font-size: 0.68rem; }
-  .lh-table td { color: #e2e8f0; }
-  .lh-table tr:last-child td { border-bottom: none; font-weight: 700; }
-  .hl { background: #2d1f0e; }
-
-  .warning {
-    background: #451a03; border: 1px solid #f97316; border-radius: 12px;
-    padding: 10px 14px; margin-bottom: 12px; font-size: 0.82rem; color: #fed7aa; display: none;
-  }
-  .warning.show { display: block; }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Segoe UI',sans-serif;background:#0f172a;color:#e2e8f0;min-height:100vh;padding:16px}
+  .container{max-width:700px;margin:0 auto}
+  h1{text-align:center;font-size:1.4rem;margin-bottom:6px;color:#38bdf8}
+  .subtitle{text-align:center;font-size:0.8rem;color:#64748b;margin-bottom:20px}
+  .input-section{background:#1e293b;border-radius:16px;padding:20px;margin-bottom:16px}
+  .input-grid{display:grid;grid-template-columns:1fr 40px 1fr 40px 1fr 20px;gap:6px;align-items:center;margin-bottom:12px}
+  .input-box{text-align:center}
+  .input-box label{font-size:0.7rem;color:#64748b;display:block;margin-bottom:4px}
+  .input-box input{width:100%;padding:10px;font-size:1.4rem;text-align:center;border:2px solid #334155;border-radius:10px;background:#0f172a;color:#f1f5f9;outline:none}
+  .input-box input:focus{border-color:#38bdf8}
+  .op{font-size:1.4rem;color:#64748b;text-align:center;padding-top:18px}
+  .total-display{text-align:center;margin-bottom:12px}
+  .total-display .total-label{font-size:0.75rem;color:#64748b}
+  .total-display .total-num{font-size:2.2rem;font-weight:800;color:#38bdf8}
+  .total-display .total-unit{font-size:0.85rem;color:#64748b}
+  .btn{display:block;width:100%;padding:12px;font-size:1rem;font-weight:700;border:none;border-radius:12px;cursor:pointer;background:#2563eb;color:white}
+  .btn:hover{background:#1d4ed8}
+  .btn:active{transform:scale(0.98)}
+  .result{display:none}
+  .result.show{display:block}
+  .summary-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:#1e293b;border-radius:16px;padding:14px;margin-bottom:16px}
+  .summary-item{text-align:center}
+  .summary-item .num{font-size:1.6rem;font-weight:800;color:#38bdf8}
+  .summary-item .lbl{font-size:0.65rem;color:#64748b;margin-top:2px}
+  .step-card{background:#1e293b;border-radius:16px;padding:16px;margin-bottom:12px;border-left:4px solid #334155}
+  .step-card.s1{border-left-color:#22c55e}
+  .step-card.s2{border-left-color:#eab308}
+  .step-card.s3{border-left-color:#f97316}
+  .step-title{font-size:0.8rem;font-weight:700;color:#94a3b8;margin-bottom:10px;letter-spacing:1px}
+  .floor-grid{display:grid;gap:6px}
+  .g5{grid-template-columns:repeat(5,1fr)}
+  .floor-cell{background:#0f172a;border-radius:10px;padding:8px 4px;text-align:center}
+  .floor-cell .fl{font-size:0.65rem;color:#64748b;margin-bottom:2px}
+  .floor-cell .fn{font-size:1.3rem;font-weight:800}
+  .floor-cell .fs{font-size:0.6rem;color:#64748b;margin-top:2px}
+  .green{color:#22c55e}.yellow{color:#eab308}.orange{color:#f97316}.blue{color:#38bdf8}.gray{color:#475569}
+  .fc-card{background:linear-gradient(135deg,#1e3a5f,#1e293b);border-radius:16px;padding:16px;margin-bottom:12px;border:1px solid #2563eb}
+  .fc-card .step-title{color:#60a5fa}
+  .fc-row{display:flex;justify-content:space-around;text-align:center}
+  .fc-item .fc-num{font-size:1.4rem;font-weight:800;color:#60a5fa}
+  .fc-item .fc-lbl{font-size:0.65rem;color:#64748b;margin-top:2px}
+  .lh-output{background:#1e293b;border-radius:16px;padding:16px;margin-top:12px}
+  .lh-output .step-title{color:#a78bfa}
+  .lh-table{width:100%;border-collapse:collapse;font-size:0.78rem;margin-top:8px}
+  .lh-table th,.lh-table td{padding:7px 5px;text-align:center;border-bottom:1px solid #334155}
+  .lh-table th{color:#64748b;font-weight:600;font-size:0.68rem}
+  .lh-table td{color:#e2e8f0}
+  .lh-table tr:last-child td{border-bottom:none;font-weight:700}
+  .hl{background:#2d1f0e}
+  .warning{background:#451a03;border:1px solid #f97316;border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:0.82rem;color:#fed7aa;display:none}
+  .warning.show{display:block}
+  .popup-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center}
+  .popup-overlay.show{display:flex}
+  .popup{background:#1e293b;border:2px solid #ef4444;border-radius:16px;padding:24px;max-width:400px;text-align:center}
+  .popup h2{color:#ef4444;font-size:1.1rem;margin-bottom:10px}
+  .popup p{color:#94a3b8;font-size:0.85rem;margin-bottom:16px}
+  .popup button{padding:10px 24px;border:none;border-radius:10px;background:#ef4444;color:white;font-weight:700;cursor:pointer}
 </style>
 </head>
 <body>
 <div class="container">
   <h1>AR Stow 配置計算アプリ</h1>
-  <p class="subtitle">e勤 17時以降 LH更新用 — 総人数を入力 → 自動配置計算</p>
+  <p class="subtitle">e勤 17時以降 LH更新用 — 人数を入力 → 自動配置計算</p>
 
   <div class="input-section">
-    <label>Stow 総人数（デジコ TOTAL LH + SA e勤人数）</label>
-    <div class="input-row">
-      <input type="number" id="totalInput" placeholder="70" min="0" max="200" inputmode="numeric">
-      <button class="btn" onclick="calc()">計算</button>
+    <div class="input-grid">
+      <div class="input-box"><label>e勤 Stow数</label><input type="number" id="i1" placeholder="0" min="0" inputmode="numeric"></div>
+      <div class="op">+</div>
+      <div class="input-box"><label>e勤 FC数</label><input type="number" id="i2" placeholder="0" min="0" inputmode="numeric"></div>
+      <div class="op">+</div>
+      <div class="input-box"><label>e勤以外 Stow数</label><input type="number" id="i3" placeholder="0" min="0" inputmode="numeric"></div>
+      <div class="op">=</div>
     </div>
+    <div class="total-display">
+      <div class="total-label">総人数</div>
+      <div class="total-num" id="totalNum">0</div>
+      <div class="total-unit">名</div>
+    </div>
+    <button class="btn" onclick="calc()">計算</button>
   </div>
 
   <div class="warning" id="warn"></div>
@@ -121,20 +104,14 @@
       </div>
     </div>
 
-    <div class="step-card s2">
-      <div class="step-title">STEP 2 — 大量配置（各階6名）</div>
-      <div class="floor-grid g5">
-        <div class="floor-cell"><div class="fl">4F</div><div class="fn yellow">6</div><div class="fs">Stow</div></div>
-        <div class="floor-cell"><div class="fl">3F</div><div class="fn yellow">6</div><div class="fs">Stow</div></div>
-        <div class="floor-cell"><div class="fl">2F</div><div class="fn yellow">6</div><div class="fs">Stow</div></div>
-        <div class="floor-cell"><div class="fl">FC</div><div class="fn blue">3</div><div class="fs">3階=3名</div></div>
-        <div class="floor-cell"><div class="fl">小計</div><div class="fn gray">21</div><div class="fs">固定</div></div>
-      </div>
+    <div class="step-card s2" id="northCard" style="display:none">
+      <div class="step-title">STEP 2 — 北側配置</div>
+      <div id="northContent"></div>
     </div>
 
-    <div class="step-card s3">
-      <div class="step-title">STEP 3 — 南北配置（変動）</div>
-      <div id="s3c"></div>
+    <div class="step-card s3" id="southCard" style="display:none">
+      <div class="step-title" id="southTitle">STEP 3 — 南側配置</div>
+      <div id="southContent"></div>
     </div>
 
     <div class="fc-card">
@@ -149,88 +126,149 @@
   </div>
 </div>
 
+<div class="popup-overlay" id="popup">
+  <div class="popup">
+    <h2>⚠️ 配置上限超過</h2>
+    <p>西側固定（36名）を除いた残り人数が36名を超えています。<br>このアプリの自動計算範囲外です。<br>手動で配置を調整してください。</p>
+    <button onclick="document.getElementById('popup').className='popup-overlay'">閉じる</button>
+  </div>
+</div>
+
 <script>
-function calc() {
-  var t = parseInt(document.getElementById('totalInput').value);
-  var w = document.getElementById('warn');
-  var r = document.getElementById('res');
+var T={
+  0:{n:[],nf:0,s:[],sf:0},
+  2:{n:[],nf:0,s:[1],sf:1},
+  3:{n:[],nf:0,s:[2],sf:1},
+  4:{n:[],nf:0,s:[3],sf:1},
+  5:{n:[],nf:0,s:[4],sf:1},
+  6:{n:[5],nf:1,s:[],sf:0},
+  7:{n:[6],nf:1,s:[],sf:0},
+  8:{n:[],nf:0,s:[3,3],sf:2},
+  9:{n:[],nf:0,s:[4,3],sf:2},
+  10:{n:[],nf:0,s:[4,4],sf:2},
+  11:{n:[5],nf:1,s:[4],sf:1},
+  12:{n:[6],nf:1,s:[4],sf:1},
+  13:{n:[6,5],nf:2,s:[],sf:0},
+  14:{n:[6,6],nf:2,s:[],sf:0},
+  15:{n:[],nf:0,s:[4,4,4],sf:3},
+  16:{n:[5],nf:1,s:[4,4],sf:2},
+  17:{n:[6],nf:1,s:[4,4],sf:2},
+  18:{n:[6,5],nf:2,s:[4],sf:1},
+  19:{n:[6,6],nf:2,s:[4],sf:1},
+  20:{n:[6,6,5],nf:3,s:[],sf:0},
+  21:{n:[6,6,6],nf:3,s:[],sf:0},
+  22:{n:[6],nf:1,s:[4,4,4],sf:3},
+  23:{n:[6,5],nf:2,s:[4,4],sf:2},
+  24:{n:[6,6],nf:2,s:[4,4],sf:2},
+  25:{n:[6,6,5],nf:3,s:[4],sf:1},
+  26:{n:[6,6,6],nf:3,s:[4],sf:1},
+  27:{n:[5,5],nf:2,s:[4,4,4],sf:3},
+  28:{n:[6,5],nf:2,s:[4,4,4],sf:3},
+  29:{n:[6,6],nf:2,s:[4,4,4],sf:3},
+  30:{n:[6,6,5],nf:3,s:[4,4],sf:2},
+  31:{n:[6,6,6],nf:3,s:[4,4],sf:2},
+  32:{n:[5,5,4],nf:3,s:[4,4,4],sf:3},
+  33:{n:[5,5,5],nf:3,s:[4,4,4],sf:3},
+  34:{n:[6,5,5],nf:3,s:[4,4,4],sf:3},
+  35:{n:[6,6,5],nf:3,s:[4,4,4],sf:3},
+  36:{n:[6,6,6],nf:3,s:[4,4,4],sf:3}
+};
 
-  if (isNaN(t) || t < 0) {
-    w.textContent = '⚠️ 人数を入力してください'; w.className = 'warning show'; r.className = 'result'; return;
+function updateTotal(){
+  var a=parseInt(document.getElementById('i1').value)||0;
+  var b=parseInt(document.getElementById('i2').value)||0;
+  var c=parseInt(document.getElementById('i3').value)||0;
+  document.getElementById('totalNum').textContent=a+b+c;
+}
+document.getElementById('i1').addEventListener('input',updateTotal);
+document.getElementById('i2').addEventListener('input',updateTotal);
+document.getElementById('i3').addEventListener('input',updateTotal);
+
+function renderFloor(arr,fc,colorClass){
+  var fn=['4F','3F','2F'];
+  var nf=arr.length;
+  if(nf===0) return '<div style="text-align:center;color:#64748b;padding:12px;">配置なし</div>';
+  var cols=nf+2;
+  var h='<div style="display:grid;grid-template-columns:repeat('+cols+',1fr);gap:6px;">';
+  for(var i=0;i<nf;i++){
+    h+='<div class="floor-cell"><div class="fl">'+fn[3-nf+i]+'</div><div class="fn '+colorClass+'">'+arr[i]+'</div><div class="fs">Stow</div></div>';
   }
-
-  var fixed = 30 + 6 + 18 + 3;
-  var rem = t - fixed;
-
-  if (rem < 0) {
-    w.textContent = '⚠️ 総人数（' + t + '名）が固定配置（' + fixed + '名）より少ないです。'; w.className = 'warning show'; r.className = 'result'; return;
-  }
-  w.className = 'warning';
-
-  var nf, sa, sf;
-  if (rem === 0) { nf = 0; sa = []; sf = 0; }
-  else if (rem >= 11) {
-    nf = 3; sf = 3; var wk = rem - sf;
-    var b = Math.floor(wk / 3), e = wk % 3;
-    sa = [b, b, b]; for (var i = 0; i < e; i++) sa[i]++;
-  } else if (rem >= 5) {
-    nf = 2; sf = 2; var wk2 = rem - sf;
-    var b2 = Math.floor(wk2 / 2), e2 = wk2 % 2;
-    sa = [b2, b2]; for (var j = 0; j < e2; j++) sa[j]++;
-  } else if (rem >= 2) {
-    nf = 1; sf = 1; sa = [rem - sf];
-  } else { nf = 0; sf = 0; sa = []; }
-
-  var sn = 0; for (var k = 0; k < sa.length; k++) sn += sa[k];
-  var tfc = 6 + 3 + sf;
-  var tst = 30 + 18 + sn;
-
-  document.getElementById('sumBar').innerHTML =
-    '<div class="summary-item"><div class="num">' + t + '</div><div class="lbl">総人数</div></div>' +
-    '<div class="summary-item"><div class="num">' + tst + '</div><div class="lbl">Stow配置</div></div>' +
-    '<div class="summary-item"><div class="num">' + tfc + '</div><div class="lbl">FC合計</div></div>';
-
-  var fn = ['4F', '3F', '2F'];
-  var s3 = document.getElementById('s3c');
-  if (nf === 0) {
-    s3.innerHTML = '<div style="text-align:center;color:#64748b;padding:12px;">南北配置なし（残り0名）</div>';
-  } else {
-    var cols = nf + 2;
-    var h = '<div style="display:grid;grid-template-columns:repeat(' + cols + ',1fr);gap:6px;">';
-    for (var f = 0; f < nf; f++) {
-      h += '<div class="floor-cell"><div class="fl">' + fn[3 - nf + f] + '</div><div class="fn orange">' + sa[f] + '</div><div class="fs">Stow</div></div>';
-    }
-    h += '<div class="floor-cell"><div class="fl">FC</div><div class="fn blue">' + sf + '</div><div class="fs">' + nf + '階=' + sf + '名</div></div>';
-    h += '<div class="floor-cell"><div class="fl">小計</div><div class="fn gray">' + rem + '</div><div class="fs">変動</div></div></div>';
-    h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid #334155;"><span style="color:#94a3b8;font-size:0.82rem;">配置階数</span><span style="font-size:1.1rem;font-weight:800;color:#f97316;">' + nf + '階</span></div>';
-    s3.innerHTML = h;
-  }
-
-  document.getElementById('fcc').innerHTML =
-    '<div class="fc-row">' +
-    '<div class="fc-item"><div class="fc-num">6</div><div class="fc-lbl">西側FC</div></div>' +
-    '<div class="fc-item"><div class="fc-num">3</div><div class="fc-lbl">大量FC</div></div>' +
-    '<div class="fc-item"><div class="fc-num">' + sf + '</div><div class="fc-lbl">南北FC</div></div>' +
-    '<div class="fc-item"><div class="fc-num" style="font-size:1.8rem;">' + tfc + '</div><div class="fc-lbl">FC合計</div></div></div>';
-
-  var v4 = nf === 3 ? sa[0] : '-';
-  var v3 = nf === 3 ? sa[1] : (nf === 2 ? sa[0] : '-');
-  var v2 = nf === 3 ? sa[2] : (nf === 2 ? sa[1] : (nf === 1 ? sa[0] : '-'));
-  var t4 = 10 + 6 + (v4 === '-' ? 0 : v4);
-  var t3 = 10 + 6 + (v3 === '-' ? 0 : v3);
-  var t2 = 10 + 6 + (v2 === '-' ? 0 : v2);
-
-  document.getElementById('lht').innerHTML =
-    '<tr><th></th><th>4F</th><th>3F</th><th>2F</th><th>FC</th><th>合計</th></tr>' +
-    '<tr><td>西側</td><td>10</td><td>10</td><td>10</td><td>6</td><td>36</td></tr>' +
-    '<tr><td>大量</td><td>6</td><td>6</td><td>6</td><td>3</td><td>21</td></tr>' +
-    '<tr class="hl"><td>南北</td><td>' + v4 + '</td><td>' + v3 + '</td><td>' + v2 + '</td><td>' + sf + '</td><td>' + rem + '</td></tr>' +
-    '<tr><td><strong>合計</strong></td><td><strong>' + t4 + '</strong></td><td><strong>' + t3 + '</strong></td><td><strong>' + t2 + '</strong></td><td><strong>' + tfc + '</strong></td><td><strong>' + t + '</strong></td></tr>';
-
-  r.className = 'result show';
+  var sum=0;for(var j=0;j<arr.length;j++)sum+=arr[j];
+  h+='<div class="floor-cell"><div class="fl">FC</div><div class="fn blue">'+fc+'</div><div class="fs">'+nf+'階='+fc+'名</div></div>';
+  h+='<div class="floor-cell"><div class="fl">小計</div><div class="fn gray">'+(sum+fc)+'</div><div class="fs">変動</div></div></div>';
+  return h;
 }
 
-document.getElementById('totalInput').addEventListener('keydown', function(e) { if (e.key === 'Enter') calc(); });
+function calc(){
+  var t=parseInt(document.getElementById('totalNum').textContent);
+  var w=document.getElementById('warn');
+  var r=document.getElementById('res');
+
+  if(isNaN(t)||t<=0){w.textContent='⚠️ 人数を入力してください';w.className='warning show';r.className='result';return;}
+  if(t<36){w.textContent='⚠️ 総人数（'+t+'名）が西側固定配置（36名）より少ないです。';w.className='warning show';r.className='result';return;}
+
+  var rem=t-36;
+
+  if(rem>36){document.getElementById('popup').className='popup-overlay show';w.className='warning';r.className='result';return;}
+  if(rem===1){w.textContent='⚠️ 残り1名は自動配置できません。手動で調整してください。';w.className='warning show';r.className='result';return;}
+
+  w.className='warning';
+  var a=T[rem];
+  var nArr=a.n,nfc=a.nf,sArr=a.s,sfc=a.sf;
+  var fcTotal=6+nfc+sfc;
+  var stowN=0;for(var i=0;i<nArr.length;i++)stowN+=nArr[i];
+  var stowS=0;for(var j=0;j<sArr.length;j++)stowS+=sArr[j];
+  var stowTotal=30+stowN+stowS;
+
+  document.getElementById('sumBar').innerHTML=
+    '<div class="summary-item"><div class="num">'+t+'</div><div class="lbl">総人数</div></div>'+
+    '<div class="summary-item"><div class="num">'+stowTotal+'</div><div class="lbl">Stow配置</div></div>'+
+    '<div class="summary-item"><div class="num">'+fcTotal+'</div><div class="lbl">FC合計</div></div>';
+
+  var nc=document.getElementById('northCard');
+  var sc=document.getElementById('southCard');
+
+  if(nArr.length>0){nc.style.display='block';document.getElementById('northContent').innerHTML=renderFloor(nArr,nfc,'yellow');}
+  else{nc.style.display='none';}
+
+  if(sArr.length>0){
+    sc.style.display='block';
+    document.getElementById('southTitle').textContent=nArr.length>0?'STEP 3 — 南側配置':'STEP 2 — 南側配置';
+    document.getElementById('southContent').innerHTML=renderFloor(sArr,sfc,'orange');
+  } else{sc.style.display='none';}
+
+  document.getElementById('fcc').innerHTML=
+    '<div class="fc-row">'+
+    '<div class="fc-item"><div class="fc-num">6</div><div class="fc-lbl">西側FC</div></div>'+
+    '<div class="fc-item"><div class="fc-num">'+nfc+'</div><div class="fc-lbl">北側FC</div></div>'+
+    '<div class="fc-item"><div class="fc-num">'+sfc+'</div><div class="fc-lbl">南側FC</div></div>'+
+    '<div class="fc-item"><div class="fc-num" style="font-size:1.8rem;">'+fcTotal+'</div><div class="fc-lbl">FC合計</div></div></div>';
+
+  var n4='-',n3='-',n2='-';
+  if(nArr.length===3){n4=nArr[0];n3=nArr[1];n2=nArr[2];}
+  else if(nArr.length===2){n3=nArr[0];n2=nArr[1];}
+  else if(nArr.length===1){n2=nArr[0];}
+  var s4='-',s3='-',s2='-';
+  if(sArr.length===3){s4=sArr[0];s3=sArr[1];s2=sArr[2];}
+  else if(sArr.length===2){s3=sArr[0];s2=sArr[1];}
+  else if(sArr.length===1){s2=sArr[0];}
+
+  var t4=10+(n4==='-'?0:n4)+(s4==='-'?0:s4);
+  var t3=10+(n3==='-'?0:n3)+(s3==='-'?0:s3);
+  var t2=10+(n2==='-'?0:n2)+(s2==='-'?0:s2);
+
+  document.getElementById('lht').innerHTML=
+    '<tr><th></th><th>4F</th><th>3F</th><th>2F</th><th>FC</th><th>合計</th></tr>'+
+    '<tr><td>西側</td><td>10</td><td>10</td><td>10</td><td>6</td><td>36</td></tr>'+
+    '<tr class="hl"><td>北側</td><td>'+n4+'</td><td>'+n3+'</td><td>'+n2+'</td><td>'+nfc+'</td><td>'+(stowN+nfc)+'</td></tr>'+
+    '<tr class="hl"><td>南側</td><td>'+s4+'</td><td>'+s3+'</td><td>'+s2+'</td><td>'+sfc+'</td><td>'+(stowS+sfc)+'</td></tr>'+
+    '<tr><td><strong>合計</strong></td><td><strong>'+t4+'</strong></td><td><strong>'+t3+'</strong></td><td><strong>'+t2+'</strong></td><td><strong>'+fcTotal+'</strong></td><td><strong>'+t+'</strong></td></tr>';
+
+  r.className='result show';
+}
+
+document.querySelectorAll('input').forEach(function(el){el.addEventListener('keydown',function(e){if(e.key==='Enter')calc();});});
 </script>
 </body>
 </html>
+
